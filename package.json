@@ -1,0 +1,23 @@
+{
+  "name": "link-redirect-service",
+  "version": "2.0.0",
+  "description": "Cloudflare Pages 链接跳转服务",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler pages dev public",
+    "deploy": "wrangler pages deploy public",
+    "deploy:preview": "wrangler pages deploy public --branch=preview"
+  },
+  "keywords": [
+    "cloudflare",
+    "pages",
+    "redirect",
+    "link",
+    "encryption"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}

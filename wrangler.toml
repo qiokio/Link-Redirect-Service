@@ -1,0 +1,28 @@
+# Cloudflare Pages 配置文件
+name = "link-redirect-service"
+compatibility_date = "2024-01-01"
+
+# Pages 项目配置
+pages_build_output_dir = "public"
+
+# 环境变量（在 Cloudflare Dashboard 中配置）
+# 这些变量需要在 Pages 项目设置中添加
+[vars]
+# GENERATE_PAGE_PASSWORD = "your-password-here"
+# ENCRYPTION_KEY = "your-encryption-key-here"
+# OBFUSCATION_KEY = "your-obfuscation-key-here"
+# JWT_SECRET = "your-jwt-secret-here"
+# SESSION_TIMEOUT = "3600"
+# DEFAULT_DELAY = "3000"
+# ENABLE_REFERER_CHECK = "true"
+# ENABLE_DELAY = "true"
+# ALLOWED_DOMAINS = "example.com,example.org"
+# ALLOWED_REFERERS = "yourdomain.com"
+# NO_REFERER_CHECK_DOMAINS = ""
+# ALLOW_EMPTY_REFERER_DOMAINS = ""
+# WEBHOOK_URL = ""
+
+# KV 命名空间绑定（可选，用于统计）
+# [[kv_namespaces]]
+# binding = "REDIRECT_STATS"
+# id = "your-kv-namespace-id"
