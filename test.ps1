@@ -83,7 +83,6 @@ Write-Host ""
 # 5. 测试加密路由
 Write-Host "5. 加密路由" -ForegroundColor Yellow
 Test-Endpoint "无效的 AES 路径" "$BaseUrl/e/invalid" 400
-Test-Endpoint "无效的 XOR 路径" "$BaseUrl/o/invalid" 400
 Write-Host ""
 
 # 6. 测试登录 API

@@ -67,7 +67,6 @@ echo ""
 # 5. 测试加密路由
 echo "5. 加密路由"
 test_endpoint "无效的 AES 路径" "$BASE_URL/e/invalid" 400
-test_endpoint "无效的 XOR 路径" "$BASE_URL/o/invalid" 400
 echo ""
 
 # 6. 测试登录 API

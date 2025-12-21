@@ -7,7 +7,6 @@
 - ✅ **多种跳转方式**
   - 传统 URL 参数跳转
   - AES-256 加密跳转
-  - XOR 混淆跳转
 
 - 🔐 **安全特性**
   - JWT 会话管理
@@ -49,7 +48,6 @@ wrangler pages deploy public --project-name=link-redirect-service
 
 #### 可选变量
 
-- `OBFUSCATION_KEY`: XOR 混淆密钥（默认: default-obfuscation-key）
 - `SESSION_TIMEOUT`: 会话超时时间，秒（默认: 3600）
 - `DEFAULT_DELAY`: 默认延迟时间，毫秒（默认: 3000）
 - `ENABLE_REFERER_CHECK`: 启用 Referer 检查（默认: true）
@@ -95,12 +93,10 @@ https://your-domain.pages.dev/redirect?to=https://example.com&source=newsletter&
 1. 访问 `https://your-domain.pages.dev/login`
 2. 输入密码登录
 3. 在生成页面填写目标 URL 和参数
-4. 选择加密方式（AES 或 XOR）
-5. 点击生成链接
+4. 点击生成链接
 
 生成的链接格式：
 - AES: `https://your-domain.pages.dev/e/encrypted-data`
-- XOR: `https://your-domain.pages.dev/o/obfuscated-data`
 
 ## 项目结构
 
@@ -112,8 +108,6 @@ https://your-domain.pages.dev/redirect?to=https://example.com&source=newsletter&
 │   │   ├── logout.js      # 登出 API
 │   │   └── generate.js    # 生成链接 API
 │   ├── e/                 # AES 加密跳转
-│   │   └── [[path]].js    # 动态路由
-│   ├── o/                 # XOR 混淆跳转
 │   │   └── [[path]].js    # 动态路由
 │   ├── lib/               # 工具库
 │   │   └── utils.js       # 通用函数
@@ -137,7 +131,6 @@ https://your-domain.pages.dev/redirect?to=https://example.com&source=newsletter&
 - `GET /api/generate` - 生成链接 API（需要登录）
 - `GET /redirect?to=URL` - 传统跳转
 - `GET /e/{encrypted}` - AES 加密跳转
-- `GET /o/{obfuscated}` - XOR 混淆跳转
 - `GET /health` - 健康检查
 
 ## 安全建议

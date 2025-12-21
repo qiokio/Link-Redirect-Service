@@ -23,8 +23,6 @@ link-redirect-service/
 │   │   └── generate.js       # 生成链接 API
 │   ├── e/                    # AES 加密跳转
 │   │   └── [[path]].js       # 动态路由处理
-│   ├── o/                    # XOR 混淆跳转
-│   │   └── [[path]].js       # 动态路由处理
 │   ├── lib/                  # 工具库
 │   │   └── utils.js          # 通用函数（JWT、加密、配置等）
 │   ├── index.js              # 首页
@@ -53,7 +51,6 @@ link-redirect-service/
 ### 1. 跳转方式
 - ✅ 传统 URL 参数跳转
 - ✅ AES-256 加密跳转
-- ✅ XOR 混淆跳转
 
 ### 2. 安全特性
 - ✅ JWT 会话管理
@@ -101,7 +98,6 @@ link-redirect-service/
 | `/generate` | GET | 生成页面 | ✅ |
 | `/redirect` | GET | 传统跳转 | ❌ |
 | `/e/{path}` | GET | AES 加密跳转 | ❌ |
-| `/o/{path}` | GET | XOR 混淆跳转 | ❌ |
 | `/health` | GET | 健康检查 | ❌ |
 | `/api/login` | POST | 登录 API | ❌ |
 | `/api/logout` | POST | 登出 API | ❌ |
@@ -197,9 +193,10 @@ JWT_SECRET=your-jwt-secret
 
 ### 可选环境变量
 ```env
-OBFUSCATION_KEY=your-obfuscation-key
 SESSION_TIMEOUT=3600
 DEFAULT_DELAY=3000
+# 更多可选配置变量请参考 README.md
+```
 ALLOWED_DOMAINS=example.com
 ALLOWED_REFERERS=yourdomain.com
 ```

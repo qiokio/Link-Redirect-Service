@@ -1,5 +1,5 @@
 // Cloudflare Pages Functions - 生成链接 API
-import { verifySession, encryptAES, encodeXOR } from '../lib/utils.js';
+import { verifySession, encryptAES } from '../lib/utils.js';
 
 export async function onRequestGet(context) {
   const { request, env } = context;
@@ -15,7 +15,7 @@ export async function onRequestGet(context) {
     const targetUrl = url.searchParams.get('to');
     const source = url.searchParams.get('source') || 'direct';
     const delay = url.searchParams.get('delay');
-    const method = url.searchParams.get('method') || 'aes';
+    const method = 'aes'; // 只支持 AES 加密方法
     const clientIP = request.headers.get('CF-Connecting-IP');
     
     if (!targetUrl) {
@@ -47,19 +47,13 @@ export async function onRequestGet(context) {
     let encryptedUrl;
     const baseUrl = new URL(request.url).origin;
 
-    if (method === 'aes') {
-      const secretKey = env.ENCRYPTION_KEY;
-      if (!secretKey) {
-        console.log('生成AES链接失败: 未配置加密密钥', { ip: clientIP });
-        throw new Error('AES encryption key not configured');
-      }
-      const encrypted = await encryptAES(params, secretKey);
-      encryptedUrl = `${baseUrl}/e/${encrypted}`;
-    } else {
-      const obfuscationKey = env.OBFUSCATION_KEY || 'default-obfuscation-key';
-      const obfuscated = encodeXOR(params, obfuscationKey);
-      encryptedUrl = `${baseUrl}/o/${obfuscated}`;
+    const secretKey = env.ENCRYPTION_KEY;
+    if (!secretKey) {
+      console.log('生成AES链接失败: 未配置加密密钥', { ip: clientIP });
+      throw new Error('AES encryption key not configured');
     }
+    const encrypted = await encryptAES(params, secretKey);
+    encryptedUrl = `${baseUrl}/e/${encrypted}`;
 
     console.log('链接生成成功', { ip: clientIP, method, targetUrl });
 

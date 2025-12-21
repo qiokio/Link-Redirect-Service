@@ -22,14 +22,6 @@ https://your-domain.pages.dev/redirect?to=https://example.com&source=email&delay
 https://your-domain.pages.dev/e/encrypted-data-here
 ```
 
-#### XOR 混淆跳转
-- 轻量级
-- 参数隐藏
-- 适合一般场景
-
-```
-https://your-domain.pages.dev/o/obfuscated-data-here
-```
 
 ---
 

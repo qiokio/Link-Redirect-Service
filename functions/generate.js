@@ -195,12 +195,8 @@ function generateLinkPage() {
           <label>加密方法</label>
           <div class="radio-group">
             <label class="radio-option">
-              <input type="radio" name="method" value="aes" checked>
+              <input type="radio" name="method" value="aes" checked disabled>
               <span>AES 加密</span>
-            </label>
-            <label class="radio-option">
-              <input type="radio" name="method" value="xor">
-              <span>XOR 混淆</span>
             </label>
           </div>
         </div>
@@ -230,7 +226,6 @@ function generateLinkPage() {
           const targetUrl = document.getElementById('targetUrl').value;
           const source = document.getElementById('source').value;
           const delay = document.getElementById('delay').value;
-          const method = document.querySelector('input[name="method"]:checked').value;
           
           form.style.display = 'none';
           loadingDiv.style.display = 'block';
@@ -239,8 +234,7 @@ function generateLinkPage() {
           try {
             const apiUrl = '/api/generate?to=' + encodeURIComponent(targetUrl) + 
                            '&source=' + encodeURIComponent(source) + 
-                           '&delay=' + encodeURIComponent(delay) + 
-                           '&method=' + encodeURIComponent(method);
+                           '&delay=' + encodeURIComponent(delay);
             
             const response = await fetch(apiUrl);
             const data = await response.json();

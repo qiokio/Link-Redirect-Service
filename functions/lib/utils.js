@@ -284,37 +284,7 @@ export async function decryptAES(encryptedData, secretKey) {
   }
 }
 
-function xorCrypt(text, key) {
-  let result = '';
-  for (let i = 0; i < text.length; i++) {
-    result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-  }
-  return result;
-}
 
-export function encodeXOR(params, key) {
-  const text = JSON.stringify(params);
-  const encrypted = xorCrypt(text, key);
-  return btoa(encrypted)
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '');
-}
-
-export function decodeXOR(encryptedData, key) {
-  try {
-    let base64 = encryptedData.replace(/-/g, '+').replace(/_/g, '/');
-    const padding = base64.length % 4;
-    if (padding) base64 += '='.repeat(4 - padding);
-    
-    const encrypted = atob(base64);
-    const decrypted = xorCrypt(encrypted, key);
-    return JSON.parse(decrypted);
-  } catch (error) {
-    console.log('XOR解密失败', error.message);
-    throw new Error('XOR decoding failed');
-  }
-}
 
 // ==================== 配置和辅助函数 ====================
 
