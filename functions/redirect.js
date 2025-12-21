@@ -1,4 +1,4 @@
-// Cloudflare Pages Functions - 传统跳转（未加密）
+// Cloudflare Pages Functions - Traditional Redirect (Unencrypted)
 import { 
   getConfig, 
   errorResponse, 
@@ -14,7 +14,7 @@ export async function onRequestGet(context) {
   const targetUrl = url.searchParams.get('to');
   
   if (!targetUrl) {
-    console.log('传统跳转失败: 缺少目标URL参数');
+    console.log('Legacy redirect failed: Missing target URL parameter');
     return errorResponse('Missing target URL parameter "to"', 400);
   }
 
@@ -94,7 +94,7 @@ export async function onRequestGet(context) {
   const delayParam = url.searchParams.get('delay');
   const delay = parseDelay(delayParam, config.defaultDelay);
 
-  console.log('传统跳转处理成功', { targetUrl, source: clickData.source, delay });
+  console.log('Legacy redirect processed successfully', { targetUrl, source: clickData.source, delay });
 
   if (config.enableDelay && delay > 0) {
     return createDelayedRedirect(targetUrl, delay, clickData);

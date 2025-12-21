@@ -1,12 +1,12 @@
-// 通用工具函数库
+// Common utility function library
 
-// ==================== JWT 会话管理 ====================
+// ==================== JWT Session Management ====================
 
 export function getJWTSecret(env) {
   if (env.JWT_SECRET) {
     return env.JWT_SECRET;
   }
-  console.warn('警告: JWT_SECRET环境变量未设置，使用默认值（生产环境不安全）');
+  console.warn('Warning: JWT_SECRET environment variable not set, using default value (insecure in production)');
   return 'default-jwt-secret-key-change-in-production';
 }
 
@@ -87,7 +87,7 @@ export async function verifySession(request, env) {
   try {
     const cookieHeader = request.headers.get('Cookie');
     if (!cookieHeader) {
-      console.log('会话验证失败: 缺少Cookie头');
+      console.log('Session verification failed: Missing Cookie header');
       return false;
     }
     
@@ -98,14 +98,14 @@ export async function verifySession(request, env) {
     
     const jwtToken = cookies.get('jwt');
     if (!jwtToken) {
-      console.log('会话验证失败: 缺少JWT token');
+      console.log('Session verification failed: Missing JWT token');
       return false;
     }
     
     const secret = getJWTSecret(env);
     await verifyJWT(jwtToken, secret);
     
-    console.log('会话验证成功');
+    console.log('Session verification successful');
     return true;
   } catch (error) {
     console.log('会话验证失败:', error.message);
@@ -124,7 +124,7 @@ export async function createSessionResponse(env, redirectUrl = '/generate') {
   const token = await generateJWT(payload, secret);
   const timeout = getSessionTimeout(env) / 1000;
 
-  console.log('JWT会话创建成功');
+  console.log('JWT session created successfully');
   
   return new Response(null, {
     status: 302,
@@ -136,7 +136,7 @@ export async function createSessionResponse(env, redirectUrl = '/generate') {
 }
 
 export function clearSessionResponse(redirectUrl = '/login') {
-  console.log('清除会话并重定向到登录页');
+  console.log('Clearing session and redirecting to login page');
   
   return new Response(null, {
     status: 302,
@@ -147,7 +147,7 @@ export function clearSessionResponse(redirectUrl = '/login') {
   });
 }
 
-// ==================== Base64Url 编码辅助函数 ====================
+// ==================== Base64Url Encoding Helper Functions ====================
 
 function base64UrlEncode(str) {
   return btoa(str)
@@ -185,7 +185,7 @@ function base64UrlDecodeToBuffer(str) {
   return bytes.buffer;
 }
 
-// ==================== 加密/解密函数 ====================
+// ==================== Encryption/Decryption Functions ====================
 
 export async function encryptAES(params, secretKey) {
   const text = JSON.stringify(params);
@@ -279,14 +279,14 @@ export async function decryptAES(encryptedData, secretKey) {
     const text = new TextDecoder().decode(decrypted);
     return JSON.parse(text);
   } catch (error) {
-    console.log('AES解密失败', error.message);
+    console.log('AES decryption failed', error.message);
     throw new Error('AES decryption failed');
   }
 }
 
 
 
-// ==================== 配置和辅助函数 ====================
+// ==================== Configuration and Helper Functions ====================
 
 export function getConfig(env) {
   return {
@@ -316,7 +316,7 @@ export function parseDelay(value, defaultValue) {
 }
 
 export function errorResponse(message, status = 400) {
-  console.log('返回错误响应', { status, message });
+  console.log('Returning error response', { status, message });
 
   const html = `
     <!DOCTYPE html>
@@ -367,19 +367,19 @@ export function createDelayedRedirect(targetUrl, delay, clickData) {
   const safeTargetUrl = targetUrl.replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const delaySeconds = delay / 1000;
 
-  const methodNote = clickData.method === 'aes' ? '<p>AES 加密链接</p>' : 
-                    clickData.method === 'xor' ? '<p>XOR 混淆链接</p>' : 
-                    clickData.method === 'legacy' ? '<p>原始方法链接</p>' : '';
+  const methodNote = clickData.method === 'aes' ? '<p>AES Encrypted Link</p>' : 
+                    clickData.method === 'xor' ? '<p>XOR Obfuscated Link</p>' : 
+                    clickData.method === 'legacy' ? '<p>Legacy Method Link</p>' : '';
 
-  console.log('创建延迟跳转页面', { targetUrl, delay, method: clickData.method });
+  console.log('Creating delayed redirect page', { targetUrl, delay, method: clickData.method });
 
   const html = `
     <!DOCTYPE html>
-    <html lang="zh-CN">
+    <html lang="en">
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>正在跳转</title>
+      <title>Redirecting</title>
       <meta http-equiv="refresh" content="${delaySeconds};url=${safeTargetUrl}">
       <style>
         body {
@@ -426,8 +426,8 @@ export function createDelayedRedirect(targetUrl, delay, clickData) {
     </head>
     <body>
       <div class="container">
-        <h1>正在跳转</h1>
-        <p>将在 <strong>${delaySeconds}</strong> 秒后跳转到以下 URL：</p>
+        <h1>Redirecting</h1>
+        <p>Redirecting to the following URL in <strong>${delaySeconds}</strong> seconds:</p>
         <div class="url">${safeTargetUrl}</div>
         ${methodNote}
         <a href="${safeTargetUrl}" class="btn">立即跳转</a>

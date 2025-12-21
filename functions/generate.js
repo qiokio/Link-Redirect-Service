@@ -1,4 +1,4 @@
-// Cloudflare Pages Functions - 生成页面
+// Cloudflare Pages Functions - Generate Page
 import { verifySession, clearSessionResponse } from './lib/utils.js';
 
 export async function onRequestGet(context) {
@@ -20,7 +20,7 @@ export async function onRequestGet(context) {
 function generateLinkPage() {
   const html = `
     <!DOCTYPE html>
-    <html lang="zh-CN">
+    <html lang="en">
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -172,47 +172,47 @@ function generateLinkPage() {
     <body>
       <div class="header">
         <h1>Link Generator</h1>
-        <p>生成安全的跳转链接</p>
+        <p>Generate secure redirect links</p>
       </div>
       
       <form id="generateForm">
         <div class="form-group">
-          <label for="targetUrl">目标 URL</label>
+          <label for="targetUrl">Target URL</label>
           <input type="url" id="targetUrl" required placeholder="https://example.com">
         </div>
         
         <div class="form-group">
-          <label for="source">来源标识（可选）</label>
+          <label for="source">Source Identifier (optional)</label>
           <input type="text" id="source" placeholder="newsletter, campaign, etc.">
         </div>
         
         <div class="form-group">
-          <label for="delay">延迟时间（毫秒，可选）</label>
-          <input type="number" id="delay" placeholder="默认 3000" min="0" max="10000">
+          <label for="delay">Delay Time (milliseconds, optional)</label>
+          <input type="number" id="delay" placeholder="Default 3000" min="0" max="10000">
         </div>
         
         <div class="form-group">
-          <label>加密方法</label>
+          <label>Encryption Method</label>
           <div class="radio-group">
             <label class="radio-option">
               <input type="radio" name="method" value="aes" checked disabled>
-              <span>AES 加密</span>
+              <span>AES Encryption</span>
             </label>
           </div>
         </div>
         
-        <button type="submit" class="btn">生成链接</button>
+        <button type="submit" class="btn">Generate Link</button>
       </form>
       
       <div class="loading" id="loading">
-        <p>正在生成链接...</p>
+        <p>Generating link...</p>
       </div>
       
       <div class="result" id="result"></div>
       
       <div class="footer">
-        <a href="/">首页</a>
-        <a href="#" id="logoutLink">登出</a>
+        <a href="/">Home</a>
+        <a href="#" id="logoutLink">Logout</a>
       </div>
 
       <script>
@@ -242,23 +242,23 @@ function generateLinkPage() {
             if (data.success) {
               resultDiv.className = 'result success';
               resultDiv.innerHTML = \`
-                <h3>链接生成成功</h3>
-                <p><strong>目标 URL:</strong> \${data.targetUrl}</p>
-                <p><strong>来源:</strong> \${data.source}</p>
-                <p><strong>延迟:</strong> \${data.delay}ms</p>
+                <h3>Link Generated Successfully</h3>
+                <p><strong>Target URL:</strong> \${data.targetUrl}</p>
+                <p><strong>Source:</strong> \${data.source}</p>
+                <p><strong>Delay:</strong> \${data.delay}ms</p>
                 <div class="url-display">\${data.encryptedUrl}</div>
                 <div class="action-buttons">
-                  <button class="btn" onclick="copyToClipboard('\${data.encryptedUrl}')">复制链接</button>
-                  <button class="btn btn-secondary" onclick="testLink('\${data.encryptedUrl}')">测试链接</button>
+                  <button class="btn" onclick="copyToClipboard('\${data.encryptedUrl}')">Copy Link</button>
+                  <button class="btn btn-secondary" onclick="testLink('\${data.encryptedUrl}')">Test Link</button>
                 </div>
               \`;
             } else {
               resultDiv.className = 'result error';
-              resultDiv.innerHTML = \`<h3>生成失败</h3><p>\${data.error}</p>\`;
+              resultDiv.innerHTML = \`<h3>Generation Failed</h3><p>\${data.error}</p>\`;
             }
           } catch (error) {
             resultDiv.className = 'result error';
-            resultDiv.innerHTML = \`<h3>网络错误</h3><p>\${error.message}</p>\`;
+            resultDiv.innerHTML = \`<h3>Network Error</h3><p>\${error.message}</p>\`;
           } finally {
             loadingDiv.style.display = 'none';
             form.style.display = 'block';
@@ -285,7 +285,7 @@ function generateLinkPage() {
         
         function copyToClipboard(url) {
           navigator.clipboard.writeText(url).then(function() {
-            alert('链接已复制到剪贴板');
+            alert('Link copied to clipboard');
           });
         }
         

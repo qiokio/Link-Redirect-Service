@@ -1,4 +1,4 @@
-// Cloudflare Pages Functions - 生成链接 API
+// Cloudflare Pages Functions - Generate Link API
 import { verifySession, encryptAES } from '../lib/utils.js';
 
 export async function onRequestGet(context) {
@@ -6,7 +6,7 @@ export async function onRequestGet(context) {
   
   const isAuthenticated = await verifySession(request, env);
   if (!isAuthenticated) {
-    console.log('生成链接请求被拒绝: 未授权访问');
+    console.log('Link generation request denied: Unauthorized access');
     return new Response('Unauthorized', { status: 401 });
   }
 
@@ -15,11 +15,11 @@ export async function onRequestGet(context) {
     const targetUrl = url.searchParams.get('to');
     const source = url.searchParams.get('source') || 'direct';
     const delay = url.searchParams.get('delay');
-    const method = 'aes'; // 只支持 AES 加密方法
+    const method = 'aes'; // Only AES encryption method supported
     const clientIP = request.headers.get('CF-Connecting-IP');
     
     if (!targetUrl) {
-      console.log('生成链接失败: 缺少目标URL', { ip: clientIP });
+      console.log('Link generation failed: Missing target URL', { ip: clientIP });
       return new Response(JSON.stringify({ error: 'Missing target URL' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
@@ -29,7 +29,7 @@ export async function onRequestGet(context) {
     try {
       new URL(targetUrl);
     } catch (error) {
-      console.log('生成链接失败: 无效的目标URL', { ip: clientIP, targetUrl });
+      console.log('Link generation failed: Invalid target URL', { ip: clientIP, targetUrl });
       return new Response(JSON.stringify({ error: 'Invalid target URL' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
@@ -49,13 +49,13 @@ export async function onRequestGet(context) {
 
     const secretKey = env.ENCRYPTION_KEY;
     if (!secretKey) {
-      console.log('生成AES链接失败: 未配置加密密钥', { ip: clientIP });
+      console.log('AES link generation failed: Encryption key not configured', { ip: clientIP });
       throw new Error('AES encryption key not configured');
     }
     const encrypted = await encryptAES(params, secretKey);
     encryptedUrl = `${baseUrl}/e/${encrypted}`;
 
-    console.log('链接生成成功', { ip: clientIP, method, targetUrl });
+    console.log('Link generated successfully', { ip: clientIP, method, targetUrl });
 
     return new Response(JSON.stringify({
       success: true,
@@ -69,7 +69,7 @@ export async function onRequestGet(context) {
     });
 
   } catch (error) {
-    console.log('生成链接失败', { error: error.message });
+    console.log('Link generation failed', { error: error.message });
     return new Response(JSON.stringify({ error: 'Failed to generate link' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }

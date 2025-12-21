@@ -1,4 +1,4 @@
-// Cloudflare Pages Functions - 登录页面
+// Cloudflare Pages Functions - Login Page
 export async function onRequestGet(context) {
   return showLoginPage();
 }
@@ -6,11 +6,11 @@ export async function onRequestGet(context) {
 function showLoginPage() {
   const html = `
     <!DOCTYPE html>
-    <html lang="zh-CN">
+    <html lang="en">
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>登录 - Link Generator</title>
+      <title>Login - Link Generator</title>
       <style>
         * {
           margin: 0;
@@ -101,21 +101,21 @@ function showLoginPage() {
       <div class="login-container">
         <div class="login-header">
           <h1>Link Generator</h1>
-          <p>请输入密码以访问</p>
+          <p>Please enter your password to access</p>
         </div>
         
         <form id="loginForm">
           <div class="form-group">
-            <label for="password">密码</label>
+            <label for="password">Password</label>
             <input type="password" id="password" required>
           </div>
-          <button type="submit" class="btn">登录</button>
+          <button type="submit" class="btn">Login</button>
         </form>
         
-        <div class="error-message" id="errorMessage">密码错误，请重试</div>
+        <div class="error-message" id="errorMessage">Incorrect password, please try again</div>
         
         <div class="footer">
-          <a href="/" style="color: #6c757d; text-decoration: none;">← 返回首页</a>
+          <a href="/" style="color: #6c757d; text-decoration: none;">← Back to home</a>
         </div>
       </div>
 
@@ -128,7 +128,7 @@ function showLoginPage() {
           const submitBtn = this.querySelector('button[type="submit"]');
           
           submitBtn.disabled = true;
-          submitBtn.textContent = '登录中...';
+          submitBtn.textContent = 'Logging in...';
           errorMessage.style.display = 'none';
           
           try {
@@ -148,7 +148,7 @@ function showLoginPage() {
               errorMessage.style.display = 'block';
             }
           } catch (error) {
-            errorMessage.textContent = '网络错误: ' + error.message;
+            errorMessage.textContent = 'Network error: ' + error.message;
             errorMessage.style.display = 'block';
           } finally {
             submitBtn.disabled = false;

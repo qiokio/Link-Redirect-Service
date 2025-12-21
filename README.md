@@ -1,208 +1,208 @@
-# Link Redirect Service - Cloudflare Pages 版本
+# Link Redirect Service - Cloudflare Pages Version
 
-这是一个基于 Cloudflare Pages Functions 的安全链接跳转服务，支持多种加密方式和完善的安全特性。
+This is a secure link redirection service based on Cloudflare Pages Functions, supporting multiple encryption methods and comprehensive security features.
 
-## 主要特性
+## Key Features
 
-- ✅ **多种跳转方式**
-  - 传统 URL 参数跳转
-  - AES-256 加密跳转
+- ✅ **Multiple Redirection Methods**
+  - Traditional URL parameter redirection
+  - AES-256 encrypted redirection
 
-- 🔐 **安全特性**
-  - JWT 会话管理
-  - 域名白名单验证
-  - Referer 安全检查
-  - 延迟跳转显示目标 URL
-  - 点击统计和日志记录
+- 🔐 **Security Features**
+  - JWT session management
+  - Domain whitelist validation
+  - Referer security checks
+  - Delayed redirection with target URL display
+  - Click statistics and logging
 
-- 🎨 **用户友好**
-  - 简洁的管理界面
-  - 一键生成加密链接
-  - 支持自定义来源标识
-  - 可配置延迟时间
+- 🎨 **User-Friendly**
+  - Clean management interface
+  - One-click encrypted link generation
+  - Support for custom source identification
+  - Configurable delay time
 
-## 快速开始
+## Quick Start
 
-### 1. 部署到 Cloudflare Pages
+### 1. Deploy to Cloudflare Pages
 
 ```bash
-# 安装 Wrangler CLI
+# Install Wrangler CLI
 npm install -g wrangler
 
-# 登录 Cloudflare
+# Login to Cloudflare
 wrangler login
 
-# 部署项目
+# Deploy the project
 wrangler pages deploy public --project-name=link-redirect-service
 ```
 
-### 2. 配置环境变量
+### 2. Configure Environment Variables
 
-在 Cloudflare Pages 项目设置中添加以下环境变量：
+Add the following environment variables in your Cloudflare Pages project settings:
 
-#### 必需变量
+#### Required Variables
 
-- `GENERATE_PAGE_PASSWORD`: 生成页面的访问密码
-- `ENCRYPTION_KEY`: AES 加密密钥（建议 32 字符以上）
-- `JWT_SECRET`: JWT 签名密钥（建议 32 字符以上）
+- `GENERATE_PAGE_PASSWORD`: Password for accessing the generation page
+- `ENCRYPTION_KEY`: AES encryption key (recommended: 32+ characters)
+- `JWT_SECRET`: JWT signing secret (recommended: 32+ characters)
 
-#### 可选变量
+#### Optional Variables
 
-- `SESSION_TIMEOUT`: 会话超时时间，秒（默认: 3600）
-- `DEFAULT_DELAY`: 默认延迟时间，毫秒（默认: 3000）
-- `ENABLE_REFERER_CHECK`: 启用 Referer 检查（默认: true）
-- `ENABLE_DELAY`: 启用延迟跳转（默认: true）
-- `ALLOWED_DOMAINS`: 允许的目标域名，逗号分隔
-- `ALLOWED_REFERERS`: 允许的来源域名，逗号分隔
-- `NO_REFERER_CHECK_DOMAINS`: 不检查 Referer 的域名，逗号分隔
-- `ALLOW_EMPTY_REFERER_DOMAINS`: 允许空 Referer 的域名，逗号分隔
-- `WEBHOOK_URL`: 统计数据 Webhook URL
+- `SESSION_TIMEOUT`: Session timeout in seconds (default: 3600)
+- `DEFAULT_DELAY`: Default delay time in milliseconds (default: 3000)
+- `ENABLE_REFERER_CHECK`: Enable Referer checking (default: true)
+- `ENABLE_DELAY`: Enable delayed redirection (default: true)
+- `ALLOWED_DOMAINS`: Allowed target domains, comma-separated
+- `ALLOWED_REFERERS`: Allowed source domains, comma-separated
+- `NO_REFERER_CHECK_DOMAINS`: Domains where Referer checking is skipped, comma-separated
+- `ALLOW_EMPTY_REFERER_DOMAINS`: Domains allowing empty Referer, comma-separated
+- `WEBHOOK_URL`: Statistics webhook URL
 
-### 3. 配置 KV 命名空间（可选）
+### 3. Configure KV Namespace (Optional)
 
-如果需要持久化统计数据：
+If you need persistent statistics:
 
 ```bash
-# 创建 KV 命名空间
+# Create KV namespace
 wrangler kv:namespace create "REDIRECT_STATS"
 
-# 在 Pages 项目设置中绑定 KV 命名空间
-# 变量名: REDIRECT_STATS
-# KV 命名空间: 选择刚创建的命名空间
+# Bind KV namespace in Pages project settings
+# Variable name: REDIRECT_STATS
+# KV namespace: Select the one you just created
 ```
 
-## 使用方法
+## Usage
 
-### 1. 传统跳转（未加密）
+### 1. Traditional Redirection (Unencrypted)
 
-直接在 URL 中传递参数：
+Pass parameters directly in the URL:
 
 ```
 https://your-domain.pages.dev/redirect?to=https://example.com&source=newsletter&delay=5000
 ```
 
-参数说明：
-- `to`: 目标 URL（必需）
-- `source`: 来源标识（可选）
-- `delay`: 延迟时间，毫秒（可选）
+Parameter description:
+- `to`: Target URL (required)
+- `source`: Source identifier (optional)
+- `delay`: Delay time in milliseconds (optional)
 
-### 2. 加密跳转
+### 2. Encrypted Redirection
 
-访问 `/login` 登录后，使用生成工具创建加密链接：
+After logging in at `/login`, use the generation tool to create encrypted links:
 
-1. 访问 `https://your-domain.pages.dev/login`
-2. 输入密码登录
-3. 在生成页面填写目标 URL 和参数
-4. 点击生成链接
+1. Visit `https://your-domain.pages.dev/login`
+2. Enter password to login
+3. Fill in the target URL and parameters on the generation page
+4. Click to generate the link
 
-生成的链接格式：
+Generated link format:
 - AES: `https://your-domain.pages.dev/e/encrypted-data`
 
-## 项目结构
+## Project Structure
 
 ```
 .
 ├── functions/              # Cloudflare Pages Functions
-│   ├── api/               # API 路由
-│   │   ├── login.js       # 登录 API
-│   │   ├── logout.js      # 登出 API
-│   │   └── generate.js    # 生成链接 API
-│   ├── e/                 # AES 加密跳转
-│   │   └── [[path]].js    # 动态路由
-│   ├── lib/               # 工具库
-│   │   └── utils.js       # 通用函数
-│   ├── index.js           # 首页
-│   ├── login.js           # 登录页面
-│   ├── generate.js        # 生成页面
-│   ├── redirect.js        # 传统跳转
-│   └── health.js          # 健康检查
-├── public/                # 静态文件目录
-├── wrangler.toml          # Cloudflare 配置
-└── README.md              # 项目文档
+│   ├── api/               # API routes
+│   │   ├── login.js       # Login API
+│   │   ├── logout.js      # Logout API
+│   │   └── generate.js    # Link generation API
+│   ├── e/                 # AES encrypted redirection
+│   │   └── [[path]].js    # Dynamic route
+│   ├── lib/               # Utility library
+│   │   └── utils.js       # Common functions
+│   ├── index.js           # Home page
+│   ├── login.js           # Login page
+│   ├── generate.js        # Generation page
+│   ├── redirect.js        # Traditional redirection
+│   └── health.js          # Health check
+├── public/                # Static files directory
+├── wrangler.toml          # Cloudflare configuration
+└── README.md              # Project documentation
 ```
 
-## API 端点
+## API Endpoints
 
-- `GET /` - 首页和使用说明
-- `GET /login` - 登录页面
-- `POST /api/login` - 登录 API
-- `POST /api/logout` - 登出 API
-- `GET /generate` - 生成链接页面（需要登录）
-- `GET /api/generate` - 生成链接 API（需要登录）
-- `GET /redirect?to=URL` - 传统跳转
-- `GET /e/{encrypted}` - AES 加密跳转
-- `GET /health` - 健康检查
+- `GET /` - Home page and usage instructions
+- `GET /login` - Login page
+- `POST /api/login` - Login API
+- `POST /api/logout` - Logout API
+- `GET /generate` - Link generation page (requires login)
+- `GET /api/generate` - Link generation API (requires login)
+- `GET /redirect?to=URL` - Traditional redirection
+- `GET /e/{encrypted}` - AES encrypted redirection
+- `GET /health` - Health check
 
-## 安全建议
+## Security Recommendations
 
-1. **强密码**: 使用强密码作为 `GENERATE_PAGE_PASSWORD`
-2. **密钥管理**: 定期更换 `ENCRYPTION_KEY` 和 `JWT_SECRET`
-3. **域名限制**: 配置 `ALLOWED_DOMAINS` 限制目标域名
-4. **Referer 检查**: 配置 `ALLOWED_REFERERS` 限制来源
-5. **HTTPS**: 确保使用 HTTPS 访问服务
-6. **日志监控**: 定期检查日志，发现异常访问
+1. **Strong Password**: Use a strong password for `GENERATE_PAGE_PASSWORD`
+2. **Key Management**: Regularly rotate `ENCRYPTION_KEY` and `JWT_SECRET`
+3. **Domain Restrictions**: Configure `ALLOWED_DOMAINS` to limit target domains
+4. **Referer Checks**: Configure `ALLOWED_REFERERS` to limit sources
+5. **HTTPS**: Ensure the service is accessed over HTTPS
+6. **Log Monitoring**: Regularly check logs for abnormal access
 
-## 与 Workers 版本的区别
+## Differences from Workers Version
 
-### Cloudflare Pages Functions 优势
+### Advantages of Cloudflare Pages Functions
 
-1. **文件系统路由**: 更直观的路由结构
-2. **静态资源**: 可以直接托管静态文件
-3. **自动部署**: 与 Git 集成，自动部署
-4. **免费额度**: 更高的免费请求额度
+1. **File System Routing**: More intuitive route structure
+2. **Static Assets**: Can directly host static files
+3. **Automatic Deployment**: Git integration with automatic deployment
+4. **Free Tier**: Higher free request quota
 
-### 主要变化
+### Major Changes
 
-1. **路由方式**: 从单一入口改为文件系统路由
-2. **上下文对象**: 使用 `context` 对象替代 `env` 和 `ctx`
-3. **导出方式**: 使用 `onRequest*` 函数导出
-4. **模块化**: 更好的代码组织和模块化
+1. **Routing Method**: Changed from single entry to file system routing
+2. **Context Object**: Uses `context` object instead of `env` and `ctx`
+3. **Export Method**: Uses `onRequest*` functions for exports
+4. **Modularization**: Better code organization and modularity
 
-## 开发
+## Development
 
-### 本地开发
+### Local Development
 
 ```bash
-# 安装依赖
+# Install dependencies
 npm install wrangler -g
 
-# 本地运行
+# Run locally
 wrangler pages dev public
 
-# 访问 http://localhost:8788
+# Access http://localhost:8788
 ```
 
-### 部署
+### Deployment
 
 ```bash
-# 部署到生产环境
+# Deploy to production
 wrangler pages deploy public --project-name=link-redirect-service
 
-# 部署到预览环境
+# Deploy to preview environment
 wrangler pages deploy public --project-name=link-redirect-service --branch=preview
 ```
 
-## 故障排除
+## Troubleshooting
 
-### 1. 登录失败
+### 1. Login Failure
 
-- 检查 `GENERATE_PAGE_PASSWORD` 环境变量是否正确配置
-- 检查浏览器控制台是否有错误信息
+- Check if the `GENERATE_PAGE_PASSWORD` environment variable is correctly configured
+- Check the browser console for error messages
 
-### 2. 加密链接无法访问
+### 2. Encrypted Link Inaccessible
 
-- 检查 `ENCRYPTION_KEY` 环境变量是否配置
-- 确保密钥在生成和访问时一致
+- Check if the `ENCRYPTION_KEY` environment variable is configured
+- Ensure the key is consistent between generation and access
 
-### 3. JWT 会话过期
+### 3. JWT Session Expired
 
-- 检查 `JWT_SECRET` 环境变量是否配置
-- 调整 `SESSION_TIMEOUT` 增加会话时长
+- Check if the `JWT_SECRET` environment variable is configured
+- Adjust `SESSION_TIMEOUT` to increase session duration
 
-## 许可证
+## License
 
 MIT License
 
-## 贡献
+## Contributing
 
-欢迎提交 Issue 和 Pull Request！
+Contributions via Issues and Pull Requests are welcome!
