@@ -108,7 +108,7 @@ export async function verifySession(request, env) {
     console.log('Session verification successful');
     return true;
   } catch (error) {
-    console.log('会话验证失败:', error.message);
+    console.log('Session verification failed:', error.message);
     return false;
   }
 }
@@ -430,7 +430,7 @@ export function createDelayedRedirect(targetUrl, delay, clickData) {
         <p>Redirecting to the following URL in <strong>${delaySeconds}</strong> seconds:</p>
         <div class="url">${safeTargetUrl}</div>
         ${methodNote}
-        <a href="${safeTargetUrl}" class="btn">立即跳转</a>
+        <a href="${safeTargetUrl}" class="btn">Redirect Now</a>
       </div>
       
       <script>
@@ -490,3 +490,5 @@ export async function logBlockedRequest(request, targetUrl, reason, config) {
     });
   }
 }
+
+

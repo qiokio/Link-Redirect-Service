@@ -1,4 +1,4 @@
-// Cloudflare Pages Functions - 健康检查
+// Cloudflare Pages Functions - Health Check
 export async function onRequestGet(context) {
   return new Response(JSON.stringify({ 
     status: 'OK',

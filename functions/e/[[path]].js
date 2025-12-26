@@ -1,4 +1,4 @@
-// Cloudflare Pages Functions - AES 加密跳转
+// Cloudflare Pages Functions - AES Encrypted Redirect
 import { 
   decryptAES, 
   getConfig, 
@@ -15,7 +15,7 @@ export async function onRequestGet(context) {
   const pathSegments = url.pathname.split('/').filter(Boolean);
   
   if (pathSegments.length < 2) {
-    console.log('AES跳转失败: 路径无效', { path: url.pathname });
+    console.log('AES redirect failed: Invalid path', { path: url.pathname });
     return errorResponse('Invalid redirect path', 400);
   }
 
@@ -25,7 +25,7 @@ export async function onRequestGet(context) {
   try {
     const secretKey = env.ENCRYPTION_KEY;
     if (!secretKey) {
-      console.log('AES解密失败: 未配置加密密钥');
+      console.log('AES decryption failed: Encryption key not configured');
       throw new Error('Encryption key not configured');
     }
     
@@ -33,15 +33,15 @@ export async function onRequestGet(context) {
     params.method = 'aes';
     
     if (params.expires && Date.now() > params.expires) {
-      console.log('AES链接已过期', { expires: new Date(params.expires).toISOString() });
+      console.log('AES link expired', { expires: new Date(params.expires).toISOString() });
       return errorResponse('Link has expired', 410);
     }
   } catch (error) {
-    console.log('AES解密失败', { error: error.message });
+    console.log('AES decryption failed', { error: error.message });
     return errorResponse('Invalid or expired link', 400);
   }
 
-  console.log('AES解密成功', { targetUrl: params.to, source: params.source });
+  console.log('AES decryption successful', { targetUrl: params.to, source: params.source });
 
   return await handleRedirectWithParams(params, request, env, waitUntil);
 }
@@ -126,7 +126,7 @@ async function handleRedirectWithParams(params, request, env, waitUntil) {
 
   const finalDelay = parseDelay(delay, config.defaultDelay);
 
-  console.log('加密跳转处理成功', { targetUrl, source, method: params.method, delay: finalDelay });
+  console.log('Encrypted redirect processed successfully', { targetUrl, source, method: params.method, delay: finalDelay });
 
   if (config.enableDelay && finalDelay > 0) {
     return createDelayedRedirect(targetUrl, finalDelay, clickData);

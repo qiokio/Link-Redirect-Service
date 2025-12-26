@@ -144,7 +144,7 @@ function showLoginPage() {
               window.location.href = '/generate';
             } else {
               const errorText = await response.text();
-              errorMessage.textContent = \`登录失败 (\${response.status}): \${errorText}\`;
+              errorMessage.textContent = \`Login failed (\${response.status}): \${errorText}\`;
               errorMessage.style.display = 'block';
             }
           } catch (error) {
@@ -152,7 +152,7 @@ function showLoginPage() {
             errorMessage.style.display = 'block';
           } finally {
             submitBtn.disabled = false;
-            submitBtn.textContent = '登录';
+            submitBtn.textContent = 'Login';
           }
         });
       </script>

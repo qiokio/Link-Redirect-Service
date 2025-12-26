@@ -1,4 +1,4 @@
-// Cloudflare Pages Functions - 主页
+// Cloudflare Pages Functions - Home Page
 export async function onRequest(context) {
   return showUsagePage();
 }
