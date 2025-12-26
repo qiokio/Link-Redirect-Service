@@ -19,6 +19,7 @@ dist/
 
 # IDE
 .vscode/
+.trae/
 .idea/
 *.swp
 *.swo
@@ -35,3 +36,5 @@ logs/
 # Temporary files
 tmp/
 temp/
+_worker.bundle
+package-lock.json

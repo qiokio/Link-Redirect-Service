@@ -297,6 +297,10 @@ export function getConfig(env) {
     defaultDelay: parseDelay(env.DEFAULT_DELAY, 3000),
     enableRefererCheck: env.ENABLE_REFERER_CHECK !== 'false',
     enableDelay: env.ENABLE_DELAY !== 'false',
+    enableRiskCheck: env.ENABLE_RISK_CHECK !== 'false',
+    riskCheckDelay: parseDelay(env.RISK_CHECK_DELAY, 2000),
+    enableUnifiedRedirect: env.ENABLE_UNIFIED_REDIRECT !== 'false',
+    unifiedRedirectDelay: parseDelay(env.UNIFIED_REDIRECT_DELAY, 3000),
     webhookUrl: env.WEBHOOK_URL || '',
     kvNamespace: env.REDIRECT_STATS
   };
@@ -313,6 +317,129 @@ export function parseDelay(value, defaultValue) {
   }
   
   return parsed;
+}
+
+function getDomainFromUrl(url) {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.hostname;
+  } catch (error) {
+    return 'unknown';
+  }
+}
+
+export function createRiskCheckPage(targetUrl, params, config) {
+  const domain = getDomainFromUrl(targetUrl);
+  const delaySeconds = config.riskCheckDelay / 1000;
+  
+  const unifiedRedirectUrl = new URL('/r/', 'http://localhost');
+  unifiedRedirectUrl.searchParams.set('to', targetUrl);
+  
+  const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Security Check</title>
+      <meta http-equiv="refresh" content="${delaySeconds};url=${unifiedRedirectUrl}">
+      <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f0f0f0; }
+        .container { max-width: 600px; margin: 50px auto; padding: 20px; background-color: white; border: 1px solid #ccc; }
+        h1 { color: #333; font-size: 20px; }
+        .info { margin: 20px 0; }
+        .domain { font-family: monospace; background-color: #f9f9f9; padding: 10px; }
+        .button { display: inline-block; padding: 8px 16px; background-color: #4CAF50; color: white; text-decoration: none; border: none; cursor: pointer; }
+        .button:hover { background-color: #45a049; }
+        .security { margin-top: 20px; padding: 10px; background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; font-size: 14px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>Security Check</h1>
+        <div class="info">
+          <p>Checking destination:</p>
+          <div class="domain">${domain}</div>
+        </div>
+        <div>
+          <a href="${unifiedRedirectUrl}" class="button">Continue</a>
+        </div>
+        <div class="security">
+          <strong>Security Notice:</strong> Verifying destination safety...
+        </div>
+      </div>
+      <script>
+        setTimeout(() => {
+          window.location.href = '${unifiedRedirectUrl}';
+        }, ${config.riskCheckDelay});
+      </script>
+    </body>
+    </html>
+  `;
+
+  return new Response(html, {
+    headers: { 
+      'Content-Type': 'text/html; charset=utf-8',
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY'
+    }
+  });
+}
+
+export function createUnifiedRedirectPage(targetUrl, config) {
+  const domain = getDomainFromUrl(targetUrl);
+  const delaySeconds = config.unifiedRedirectDelay / 1000;
+  const safeTargetUrl = targetUrl.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  
+  const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Redirecting</title>
+      <meta http-equiv="refresh" content="${delaySeconds};url=${safeTargetUrl}">
+      <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f0f0f0; }
+        .container { max-width: 600px; margin: 50px auto; padding: 20px; background-color: white; border: 1px solid #ccc; }
+        h1 { color: #333; font-size: 20px; }
+        .info { margin: 20px 0; }
+        .domain { font-family: monospace; background-color: #f9f9f9; padding: 10px; }
+        .button { display: inline-block; padding: 8px 16px; background-color: #007bff; color: white; text-decoration: none; border: none; cursor: pointer; }
+        .button:hover { background-color: #0056b3; }
+        .security { margin-top: 20px; padding: 10px; background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; font-size: 14px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>Redirecting</h1>
+        <div class="info">
+          <p>You are being redirected to:</p>
+          <div class="domain">${domain}</div>
+        </div>
+        <div>
+          <a href="${safeTargetUrl}" class="button">Go Now</a>
+        </div>
+        <div class="security">
+          <strong>Notice:</strong> Redirecting to destination...
+        </div>
+      </div>
+      <script>
+        setTimeout(() => {
+          window.location.href = '${safeTargetUrl}';
+        }, ${config.unifiedRedirectDelay});
+      </script>
+    </body>
+    </html>
+  `;
+
+  return new Response(html, {
+    headers: { 
+      'Content-Type': 'text/html; charset=utf-8',
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY'
+    }
+  });
 }
 
 export function errorResponse(message, status = 400) {

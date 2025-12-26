@@ -128,7 +128,37 @@ async function handleRedirectWithParams(params, request, env, waitUntil) {
 
   console.log('Encrypted redirect processed successfully', { targetUrl, source, method: params.method, delay: finalDelay });
 
-  if (config.enableDelay && finalDelay > 0) {
+  if (config.enableRiskCheck) {
+    // Redirect to risk check page /c/
+    const riskCheckUrl = new URL('/c/', request.url);
+    riskCheckUrl.searchParams.set('to', targetUrl);
+    
+    console.log('Encrypted redirect: redirecting to risk check page', { targetUrl, riskCheckUrl: riskCheckUrl.toString() });
+    
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': riskCheckUrl.toString(),
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY'
+      }
+    });
+  } else if (config.enableUnifiedRedirect) {
+    // Directly redirect to unified redirect page /r/
+    const unifiedRedirectUrl = new URL('/r/', request.url);
+    unifiedRedirectUrl.searchParams.set('to', targetUrl);
+    
+    console.log('Encrypted redirect: redirecting to unified redirect page', { targetUrl, unifiedRedirectUrl: unifiedRedirectUrl.toString() });
+    
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': unifiedRedirectUrl.toString(),
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY'
+      }
+    });
+  } else if (config.enableDelay && finalDelay > 0) {
     return createDelayedRedirect(targetUrl, finalDelay, clickData);
   } else {
     return new Response(null, {

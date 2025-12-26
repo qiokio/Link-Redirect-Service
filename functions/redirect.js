@@ -96,7 +96,37 @@ export async function onRequestGet(context) {
 
   console.log('Legacy redirect processed successfully', { targetUrl, source: clickData.source, delay });
 
-  if (config.enableDelay && delay > 0) {
+  if (config.enableRiskCheck) {
+    // Redirect to risk check page /c/
+    const riskCheckUrl = new URL('/c/', request.url);
+    riskCheckUrl.searchParams.set('to', targetUrl);
+    
+    console.log('Legacy redirect: redirecting to risk check page', { targetUrl, riskCheckUrl: riskCheckUrl.toString() });
+    
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': riskCheckUrl.toString(),
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY'
+      }
+    });
+  } else if (config.enableUnifiedRedirect) {
+    // Directly redirect to unified redirect page /r/
+    const unifiedRedirectUrl = new URL('/r/', request.url);
+    unifiedRedirectUrl.searchParams.set('to', targetUrl);
+    
+    console.log('Legacy redirect: redirecting to unified redirect page', { targetUrl, unifiedRedirectUrl: unifiedRedirectUrl.toString() });
+    
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': unifiedRedirectUrl.toString(),
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY'
+      }
+    });
+  } else if (config.enableDelay && delay > 0) {
     return createDelayedRedirect(targetUrl, delay, clickData);
   } else {
     return new Response(null, {
