@@ -1,6 +1,16 @@
 // Cloudflare Pages Functions - Home Page
 export async function onRequest(context) {
-  return showUsagePage();
+  // 读取 public/index.html 文件内容
+  try {
+    const indexHtml = await context.env.ASSETS.fetch(context.request);
+    const html = await indexHtml.text();
+    return new Response(html, {
+      headers: { 'Content-Type': 'text/html; charset=utf-8' }
+    });
+  } catch (error) {
+    // 如果无法读取 public/index.html，则返回备用页面
+    return showUsagePage();
+  }
 }
 
 function showUsagePage() {
