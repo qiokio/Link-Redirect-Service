@@ -60,7 +60,7 @@ export async function onRequestGet(context) {
   }
   
   // Perform comprehensive risk assessment using dedicated risk check functions
-  const riskResult = assessUrlRisk(targetUrl);
+  const riskResult = await assessUrlRisk(targetUrl, { env });
   const riskResponse = createRiskCheckResponse(riskResult, targetUrl);
   const riskLevel = getRiskLevel(riskResult.reasons);
   
