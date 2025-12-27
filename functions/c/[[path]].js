@@ -4,6 +4,8 @@ import {
   errorResponse,
   verifyHMACSignature,
   getHMACSecret,
+  getCHMACSecret,
+  getRHMACSecret,
   generateHMACSignature,
   getRedirectEncryptionKey,
   getCEncryptionKey,
@@ -32,7 +34,7 @@ export async function onRequestGet(context) {
   }
   
   // Verify HMAC signature
-  const secret = getHMACSecret(env);
+  const secret = getCHMACSecret(env);
   const signatureData = `${encryptedUrl}|${timestamp}`;
   const isValid = await verifyHMACSignature(signatureData, signature, secret);
   
@@ -85,7 +87,7 @@ export async function onRequestGet(context) {
   const rEncryptionKey = getREncryptionKey(env);
   const newEncryptedUrl = await encryptAES({ to: targetUrl }, rEncryptionKey);
   const newSignatureData = `${newEncryptedUrl}|${newTimestamp}`;
-  const newSignature = await generateHMACSignature(newSignatureData, secret);
+  const newSignature = await generateHMACSignature(newSignatureData, getRHMACSecret(env));
   
   const unifiedRedirectUrl = new URL('/r/', request.url);
   unifiedRedirectUrl.searchParams.set('to', newEncryptedUrl);

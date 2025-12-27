@@ -10,6 +10,22 @@ export function getHMACSecret(env) {
   return 'default-hmac-secret-key-change-in-production';
 }
 
+export function getCHMACSecret(env) {
+  if (env.C_HMAC_SECRET) {
+    return env.C_HMAC_SECRET;
+  }
+  console.warn('Warning: C_HMAC_SECRET environment variable not set, falling back to HMAC_SECRET');
+  return getHMACSecret(env);
+}
+
+export function getRHMACSecret(env) {
+  if (env.R_HMAC_SECRET) {
+    return env.R_HMAC_SECRET;
+  }
+  console.warn('Warning: R_HMAC_SECRET environment variable not set, falling back to HMAC_SECRET');
+  return getHMACSecret(env);
+}
+
 export function getRedirectEncryptionKey(env) {
   if (env.REDIRECT_ENCRYPTION_KEY) {
     return env.REDIRECT_ENCRYPTION_KEY;

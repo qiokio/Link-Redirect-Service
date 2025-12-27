@@ -5,6 +5,7 @@ import {
   createUnifiedRedirectPage,
   verifyHMACSignature,
   getHMACSecret,
+  getRHMACSecret,
   getRedirectEncryptionKey,
   getREncryptionKey,
   decryptAES
@@ -29,7 +30,7 @@ export async function onRequestGet(context) {
   }
   
   // Verify HMAC signature
-  const secret = getHMACSecret(env);
+  const secret = getRHMACSecret(env);
   const signatureData = `${encryptedUrl}|${timestamp}`;
   const isValid = await verifyHMACSignature(signatureData, signature, secret);
   

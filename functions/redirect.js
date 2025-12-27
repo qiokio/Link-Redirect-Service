@@ -8,6 +8,8 @@ import {
   logBlockedRequest,
   generateHMACSignature,
   getHMACSecret,
+  getCHMACSecret,
+  getRHMACSecret,
   getRedirectEncryptionKey,
   getCEncryptionKey,
   getREncryptionKey,
@@ -105,7 +107,7 @@ export async function onRequestGet(context) {
   if (config.enableRiskCheck) {
     // Redirect to risk check page /c/ with encrypted target URL
     const timestamp = Date.now();
-    const secret = getHMACSecret(env);
+    const secret = getCHMACSecret(env);
     const redirectKey = getCEncryptionKey(env);
     
     // Encrypt target URL
@@ -132,7 +134,7 @@ export async function onRequestGet(context) {
   } else if (config.enableUnifiedRedirect) {
     // Directly redirect to unified redirect page /r/ with encrypted target URL
     const timestamp = Date.now();
-    const secret = getHMACSecret(env);
+    const secret = getRHMACSecret(env);
     const redirectKey = getREncryptionKey(env);
     
     // Encrypt target URL
