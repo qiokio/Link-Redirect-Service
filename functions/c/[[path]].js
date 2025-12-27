@@ -1,7 +1,6 @@
 // Cloudflare Pages Functions - Risk Check Page (Dynamic Route)
 import { 
   getConfig, 
-  errorResponse,
   verifyHMACSignature,
   getHMACSecret,
   getCHMACSecret,
@@ -14,6 +13,7 @@ import {
   encryptAES,
   getHMACExpiration
 } from '../lib/utils.js';
+import { errorResponse } from '../lib/pages/error-pages.js';
 import { assessUrlRisk, createRiskCheckResponse, getRiskLevel } from '../lib/risk-check.js';
 
 export async function onRequestGet(context) {

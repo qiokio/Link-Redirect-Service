@@ -1,8 +1,6 @@
 // Cloudflare Pages Functions - Unified Redirect Page (Dynamic Route)
 import { 
   getConfig, 
-  errorResponse, 
-  createUnifiedRedirectPage,
   verifyHMACSignature,
   getHMACSecret,
   getRHMACSecret,
@@ -11,6 +9,8 @@ import {
   decryptAES,
   getHMACExpiration
 } from '../lib/utils.js';
+import { createUnifiedRedirectPage } from '../lib/pages/redirect-pages.js';
+import { errorResponse } from '../lib/pages/error-pages.js';
 
 export async function onRequestGet(context) {
   const { request, env } = context;

@@ -1,8 +1,6 @@
 // Cloudflare Pages Functions - Traditional Redirect (Unencrypted)
 import { 
   getConfig, 
-  errorResponse, 
-  createDelayedRedirect,
   parseDelay,
   logClickStatistics,
   logBlockedRequest,
@@ -15,6 +13,8 @@ import {
   getREncryptionKey,
   encryptAES
 } from './lib/utils.js';
+import { createDelayedRedirect } from './lib/pages/redirect-pages.js';
+import { errorResponse } from './lib/pages/error-pages.js';
 
 export async function onRequestGet(context) {
   const { request, env, waitUntil } = context;
