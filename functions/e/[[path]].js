@@ -10,6 +10,8 @@ import {
   generateHMACSignature,
   getHMACSecret,
   getRedirectEncryptionKey,
+  getCEncryptionKey,
+  getREncryptionKey,
   encryptAES
 } from '../lib/utils.js';
 
@@ -136,7 +138,7 @@ async function handleRedirectWithParams(params, request, env, waitUntil) {
     // Redirect to risk check page /c/ with encrypted target URL
     const timestamp = Date.now();
     const secret = getHMACSecret(env);
-    const redirectKey = getRedirectEncryptionKey(env);
+    const redirectKey = getCEncryptionKey(env);
     
     // Encrypt target URL
     const encryptedUrl = await encryptAES({ to: targetUrl }, redirectKey);
@@ -163,7 +165,7 @@ async function handleRedirectWithParams(params, request, env, waitUntil) {
     // Directly redirect to unified redirect page /r/ with encrypted target URL
     const timestamp = Date.now();
     const secret = getHMACSecret(env);
-    const redirectKey = getRedirectEncryptionKey(env);
+    const redirectKey = getREncryptionKey(env);
     
     // Encrypt target URL
     const encryptedUrl = await encryptAES({ to: targetUrl }, redirectKey);

@@ -18,6 +18,22 @@ export function getRedirectEncryptionKey(env) {
   return 'default-redirect-encryption-key-change-in-production';
 }
 
+export function getCEncryptionKey(env) {
+  if (env.C_ENCRYPTION_KEY) {
+    return env.C_ENCRYPTION_KEY;
+  }
+  console.warn('Warning: C_ENCRYPTION_KEY environment variable not set, using default value (insecure in production)');
+  return 'default-c-encryption-key-change-in-production';
+}
+
+export function getREncryptionKey(env) {
+  if (env.R_ENCRYPTION_KEY) {
+    return env.R_ENCRYPTION_KEY;
+  }
+  console.warn('Warning: R_ENCRYPTION_KEY environment variable not set, using default value (insecure in production)');
+  return 'default-r-encryption-key-change-in-production';
+}
+
 export async function generateHMACSignature(data, secret) {
   const encoder = new TextEncoder();
   const key = await crypto.subtle.importKey(

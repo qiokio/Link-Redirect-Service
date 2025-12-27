@@ -6,6 +6,7 @@ import {
   verifyHMACSignature,
   getHMACSecret,
   getRedirectEncryptionKey,
+  getREncryptionKey,
   decryptAES
 } from '../lib/utils.js';
 
@@ -44,10 +45,10 @@ export async function onRequestGet(context) {
   }
   
   // Decrypt target URL
-  const redirectKey = getRedirectEncryptionKey(env);
+  const rEncryptionKey = getREncryptionKey(env);
   let targetUrl;
   try {
-    const decryptedData = await decryptAES(encryptedUrl, redirectKey);
+    const decryptedData = await decryptAES(encryptedUrl, rEncryptionKey);
     targetUrl = decryptedData.to;
     if (!targetUrl) {
       throw new Error('Invalid encrypted data: missing target URL');

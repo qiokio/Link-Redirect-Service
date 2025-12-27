@@ -57,6 +57,8 @@ Add the following environment variables in your Cloudflare Pages project setting
 - `NO_REFERER_CHECK_DOMAINS`: Domains where Referer checking is skipped, comma-separated
 - `ALLOW_EMPTY_REFERER_DOMAINS`: Domains allowing empty Referer, comma-separated
 - `WEBHOOK_URL`: Statistics webhook URL
+- `C_ENCRYPTION_KEY`: AES encryption key for /c/ redirects (recommended: 32+ characters)
+- `R_ENCRYPTION_KEY`: AES encryption key for /r/ redirects (recommended: 32+ characters)
 
 ### 3. Configure KV Namespace (Optional)
 

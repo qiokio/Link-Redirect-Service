@@ -6,6 +6,8 @@ import {
   getHMACSecret,
   generateHMACSignature,
   getRedirectEncryptionKey,
+  getCEncryptionKey,
+  getREncryptionKey,
   decryptAES,
   encryptAES
 } from '../lib/utils.js';
@@ -46,10 +48,10 @@ export async function onRequestGet(context) {
   }
   
   // Decrypt target URL
-  const redirectKey = getRedirectEncryptionKey(env);
+  const cEncryptionKey = getCEncryptionKey(env);
   let targetUrl;
   try {
-    const decryptedData = await decryptAES(encryptedUrl, redirectKey);
+    const decryptedData = await decryptAES(encryptedUrl, cEncryptionKey);
     targetUrl = decryptedData.to;
     if (!targetUrl) {
       throw new Error('Invalid encrypted data: missing target URL');
@@ -80,7 +82,8 @@ export async function onRequestGet(context) {
   // Risk check passed, redirect to unified redirect page /r/ with encrypted target URL
   const newTimestamp = Date.now();
   // Re-encrypt target URL with fresh encryption
-  const newEncryptedUrl = await encryptAES({ to: targetUrl }, redirectKey);
+  const rEncryptionKey = getREncryptionKey(env);
+  const newEncryptedUrl = await encryptAES({ to: targetUrl }, rEncryptionKey);
   const newSignatureData = `${newEncryptedUrl}|${newTimestamp}`;
   const newSignature = await generateHMACSignature(newSignatureData, secret);
   
