@@ -7,7 +7,9 @@ import {
   logClickStatistics,
   logBlockedRequest,
   generateHMACSignature,
-  getHMACSecret
+  getHMACSecret,
+  getRedirectEncryptionKey,
+  encryptAES
 } from './lib/utils.js';
 
 export async function onRequestGet(context) {
@@ -99,14 +101,19 @@ export async function onRequestGet(context) {
   console.log('Legacy redirect processed successfully', { targetUrl, source: clickData.source, delay });
 
   if (config.enableRiskCheck) {
-    // Redirect to risk check page /c/
+    // Redirect to risk check page /c/ with encrypted target URL
     const timestamp = Date.now();
     const secret = getHMACSecret(env);
-    const signatureData = `${targetUrl}|${timestamp}`;
+    const redirectKey = getRedirectEncryptionKey(env);
+    
+    // Encrypt target URL
+    const encryptedUrl = await encryptAES({ to: targetUrl }, redirectKey);
+    
+    const signatureData = `${encryptedUrl}|${timestamp}`;
     const signature = await generateHMACSignature(signatureData, secret);
     
     const riskCheckUrl = new URL('/c/', request.url);
-    riskCheckUrl.searchParams.set('to', targetUrl);
+    riskCheckUrl.searchParams.set('to', encryptedUrl);
     riskCheckUrl.searchParams.set('ts', timestamp.toString());
     riskCheckUrl.searchParams.set('sig', signature);
     
@@ -121,14 +128,19 @@ export async function onRequestGet(context) {
       }
     });
   } else if (config.enableUnifiedRedirect) {
-    // Directly redirect to unified redirect page /r/
+    // Directly redirect to unified redirect page /r/ with encrypted target URL
     const timestamp = Date.now();
     const secret = getHMACSecret(env);
-    const signatureData = `${targetUrl}|${timestamp}`;
+    const redirectKey = getRedirectEncryptionKey(env);
+    
+    // Encrypt target URL
+    const encryptedUrl = await encryptAES({ to: targetUrl }, redirectKey);
+    
+    const signatureData = `${encryptedUrl}|${timestamp}`;
     const signature = await generateHMACSignature(signatureData, secret);
     
     const unifiedRedirectUrl = new URL('/r/', request.url);
-    unifiedRedirectUrl.searchParams.set('to', targetUrl);
+    unifiedRedirectUrl.searchParams.set('to', encryptedUrl);
     unifiedRedirectUrl.searchParams.set('ts', timestamp.toString());
     unifiedRedirectUrl.searchParams.set('sig', signature);
     

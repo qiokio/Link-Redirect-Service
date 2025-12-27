@@ -4,7 +4,10 @@ import {
   errorResponse,
   verifyHMACSignature,
   getHMACSecret,
-  generateHMACSignature
+  generateHMACSignature,
+  getRedirectEncryptionKey,
+  decryptAES,
+  encryptAES
 } from '../lib/utils.js';
 import { assessUrlRisk, createRiskCheckResponse, getRiskLevel } from '../lib/risk-check.js';
 
@@ -12,11 +15,11 @@ export async function onRequestGet(context) {
   const { request, env } = context;
   const url = new URL(request.url);
   
-  const targetUrl = url.searchParams.get('to');
+  const encryptedUrl = url.searchParams.get('to');
   const timestamp = url.searchParams.get('ts');
   const signature = url.searchParams.get('sig');
   
-  if (!targetUrl) {
+  if (!encryptedUrl) {
     console.log('Risk check failed: Missing target URL parameter');
     return errorResponse('Missing target URL parameter "to"', 400);
   }
@@ -28,7 +31,7 @@ export async function onRequestGet(context) {
   
   // Verify HMAC signature
   const secret = getHMACSecret(env);
-  const signatureData = `${targetUrl}|${timestamp}`;
+  const signatureData = `${encryptedUrl}|${timestamp}`;
   const isValid = await verifyHMACSignature(signatureData, signature, secret);
   
   // Check if timestamp is within valid range (5 minutes)
@@ -39,6 +42,20 @@ export async function onRequestGet(context) {
   
   if (!isValid || isNaN(ts) || signatureAge > maxSignatureAge) {
     console.log('Risk check failed: Invalid HMAC signature or expired timestamp', { isValid, signatureAge, maxSignatureAge });
+    return errorResponse('Invalid or expired security parameters', 403);
+  }
+  
+  // Decrypt target URL
+  const redirectKey = getRedirectEncryptionKey(env);
+  let targetUrl;
+  try {
+    const decryptedData = await decryptAES(encryptedUrl, redirectKey);
+    targetUrl = decryptedData.to;
+    if (!targetUrl) {
+      throw new Error('Invalid encrypted data: missing target URL');
+    }
+  } catch (error) {
+    console.log('Risk check failed: Failed to decrypt target URL', { error: error.message });
     return errorResponse('Invalid or expired security parameters', 403);
   }
   
@@ -60,13 +77,15 @@ export async function onRequestGet(context) {
     return errorResponse(`Security check failed: ${riskResult.reasons.join(', ')}`, 403);
   }
   
-  // Risk check passed, redirect to unified redirect page /r/
+  // Risk check passed, redirect to unified redirect page /r/ with encrypted target URL
   const newTimestamp = Date.now();
-  const newSignatureData = `${targetUrl}|${newTimestamp}`;
+  // Re-encrypt target URL with fresh encryption
+  const newEncryptedUrl = await encryptAES({ to: targetUrl }, redirectKey);
+  const newSignatureData = `${newEncryptedUrl}|${newTimestamp}`;
   const newSignature = await generateHMACSignature(newSignatureData, secret);
   
   const unifiedRedirectUrl = new URL('/r/', request.url);
-  unifiedRedirectUrl.searchParams.set('to', targetUrl);
+  unifiedRedirectUrl.searchParams.set('to', newEncryptedUrl);
   unifiedRedirectUrl.searchParams.set('ts', newTimestamp.toString());
   unifiedRedirectUrl.searchParams.set('sig', newSignature);
   

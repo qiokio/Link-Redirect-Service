@@ -10,6 +10,14 @@ export function getHMACSecret(env) {
   return 'default-hmac-secret-key-change-in-production';
 }
 
+export function getRedirectEncryptionKey(env) {
+  if (env.REDIRECT_ENCRYPTION_KEY) {
+    return env.REDIRECT_ENCRYPTION_KEY;
+  }
+  console.warn('Warning: REDIRECT_ENCRYPTION_KEY environment variable not set, using default value (insecure in production)');
+  return 'default-redirect-encryption-key-change-in-production';
+}
+
 export async function generateHMACSignature(data, secret) {
   const encoder = new TextEncoder();
   const key = await crypto.subtle.importKey(

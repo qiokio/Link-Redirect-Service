@@ -4,18 +4,20 @@ import {
   errorResponse, 
   createUnifiedRedirectPage,
   verifyHMACSignature,
-  getHMACSecret
+  getHMACSecret,
+  getRedirectEncryptionKey,
+  decryptAES
 } from '../lib/utils.js';
 
 export async function onRequestGet(context) {
   const { request, env } = context;
   const url = new URL(request.url);
   
-  const targetUrl = url.searchParams.get('to');
+  const encryptedUrl = url.searchParams.get('to');
   const timestamp = url.searchParams.get('ts');
   const signature = url.searchParams.get('sig');
   
-  if (!targetUrl) {
+  if (!encryptedUrl) {
     console.log('Unified redirect failed: Missing target URL parameter');
     return errorResponse('Missing target URL parameter "to"', 400);
   }
@@ -27,7 +29,7 @@ export async function onRequestGet(context) {
   
   // Verify HMAC signature
   const secret = getHMACSecret(env);
-  const signatureData = `${targetUrl}|${timestamp}`;
+  const signatureData = `${encryptedUrl}|${timestamp}`;
   const isValid = await verifyHMACSignature(signatureData, signature, secret);
   
   // Check if timestamp is within valid range (5 minutes)
@@ -38,6 +40,20 @@ export async function onRequestGet(context) {
   
   if (!isValid || isNaN(ts) || signatureAge > maxSignatureAge) {
     console.log('Unified redirect failed: Invalid HMAC signature or expired timestamp', { isValid, signatureAge, maxSignatureAge });
+    return errorResponse('Invalid or expired security parameters', 403);
+  }
+  
+  // Decrypt target URL
+  const redirectKey = getRedirectEncryptionKey(env);
+  let targetUrl;
+  try {
+    const decryptedData = await decryptAES(encryptedUrl, redirectKey);
+    targetUrl = decryptedData.to;
+    if (!targetUrl) {
+      throw new Error('Invalid encrypted data: missing target URL');
+    }
+  } catch (error) {
+    console.log('Unified redirect failed: Failed to decrypt target URL', { error: error.message });
     return errorResponse('Invalid or expired security parameters', 403);
   }
   
