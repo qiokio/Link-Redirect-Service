@@ -8,7 +8,8 @@ import {
   getRHMACSecret,
   getRedirectEncryptionKey,
   getREncryptionKey,
-  decryptAES
+  decryptAES,
+  getHMACExpiration
 } from '../lib/utils.js';
 
 export async function onRequestGet(context) {
@@ -34,11 +35,11 @@ export async function onRequestGet(context) {
   const signatureData = `${encryptedUrl}|${timestamp}`;
   const isValid = await verifyHMACSignature(signatureData, signature, secret);
   
-  // Check if timestamp is within valid range (5 minutes)
+  // Check if timestamp is within valid range
   const now = Date.now();
   const ts = parseInt(timestamp);
   const signatureAge = now - ts;
-  const maxSignatureAge = 5 * 60 * 1000; // 5 minutes in milliseconds
+  const maxSignatureAge = getHMACExpiration(env); // Get expiration from env variable
   
   if (!isValid || isNaN(ts) || signatureAge > maxSignatureAge) {
     console.log('Unified redirect failed: Invalid HMAC signature or expired timestamp', { isValid, signatureAge, maxSignatureAge });

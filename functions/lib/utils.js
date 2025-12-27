@@ -26,6 +26,11 @@ export function getRHMACSecret(env) {
   return getHMACSecret(env);
 }
 
+export function getHMACExpiration(env) {
+  const expiration = parseInt(env.HMAC_EXPIRATION) || 300;
+  return expiration * 1000;
+}
+
 export function getRedirectEncryptionKey(env) {
   if (env.REDIRECT_ENCRYPTION_KEY) {
     return env.REDIRECT_ENCRYPTION_KEY;
