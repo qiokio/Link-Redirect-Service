@@ -28,8 +28,6 @@ export function createUnifiedRedirectPage(targetUrl, config) {
           --bg-card: #ffffff;
           --text-primary: #000000;
           --text-secondary: #666;
-          --text-footer: #ffffff;
-          --text-footer-secondary: #999;
           --border-color: #e5e5e5;
           --btn-primary-bg: #000000;
           --btn-primary-text: #ffffff;
@@ -40,7 +38,6 @@ export function createUnifiedRedirectPage(targetUrl, config) {
           --btn-secondary-hover-text: #ffffff;
           --feature-icon-bg: #000000;
           --feature-icon-fill: #ffffff;
-          --footer-bg: #000000;
           --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
 
@@ -51,8 +48,6 @@ export function createUnifiedRedirectPage(targetUrl, config) {
           --bg-card: #1a1a1a;
           --text-primary: #ffffff;
           --text-secondary: #a0a0a0;
-          --text-footer: #ffffff;
-          --text-footer-secondary: #999;
           --border-color: #333;
           --btn-primary-bg: #ffffff;
           --btn-primary-text: #000000;
@@ -63,7 +58,6 @@ export function createUnifiedRedirectPage(targetUrl, config) {
           --btn-secondary-hover-text: #000000;
           --feature-icon-bg: #ffffff;
           --feature-icon-fill: #000000;
-          --footer-bg: #1a1a1a;
           --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
 
@@ -196,85 +190,36 @@ export function createUnifiedRedirectPage(targetUrl, config) {
           color: var(--text-primary);
         }
 
-        footer {
-          background: var(--footer-bg);
-          color: var(--text-footer);
-          padding: 2rem 0;
-          margin-top: auto;
-          transition: background 0.3s;
-        }
 
-        .footer-content {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 1rem;
-        }
-
-        .footer-links {
-          display: flex;
-          gap: 1.5rem;
-        }
-
-        .footer-links a {
-          color: var(--text-footer);
-          text-decoration: none;
-          transition: opacity 0.2s;
-        }
-
-        .footer-links a:hover {
-          opacity: 0.7;
-        }
-
-        .copyright {
-          color: var(--text-footer-secondary);
-          font-size: 0.875rem;
-        }
 
         @media (max-width: 768px) {
-          .container {
-            padding: 0 1rem;
-          }
+            .container {
+              padding: 0 1rem;
+            }
 
-          .redirect-card {
-            padding: 2rem 1.5rem;
-            margin-bottom: 1.5rem;
-          }
+            .redirect-card {
+              padding: 2rem 1.5rem;
+              margin-bottom: 1.5rem;
+            }
 
-          .redirect-card h1 {
-            font-size: 2rem;
-          }
+            .redirect-card h1 {
+              font-size: 2rem;
+            }
 
-          .redirect-info p {
-            font-size: 1.1rem;
-          }
+            .redirect-info p {
+              font-size: 1.1rem;
+            }
 
-          .domain {
-            font-size: 1rem;
-            padding: 0.875rem 1.25rem;
-          }
+            .domain {
+              font-size: 1rem;
+              padding: 0.875rem 1.25rem;
+            }
 
-          .btn {
-            width: 100%;
-            max-width: 280px;
+            .btn {
+              width: 100%;
+              max-width: 280px;
+            }
           }
-
-          footer {
-            padding: 1.5rem 0;
-          }
-
-          .footer-content {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
-          }
-
-          .footer-links {
-            flex-direction: column;
-            gap: 0.75rem;
-          }
-        }
       </style>
     </head>
     <body>
@@ -300,19 +245,6 @@ export function createUnifiedRedirectPage(targetUrl, config) {
           </div>
         </div>
       </div>
-
-      <footer>
-        <div class="container">
-          <div class="footer-content">
-            <div class="footer-links">
-              <a href="/">Home</a>
-              <a href="#">Documentation</a>
-              <a href="#">Support</a>
-            </div>
-            <p class="copyright">© 2024 Link Redirect Service. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
 
       <script>
         // Theme detection and application
@@ -400,8 +332,6 @@ export function createDelayedRedirect(targetUrl, delay, clickData) {
           --bg-card: #ffffff;
           --text-primary: #000000;
           --text-secondary: #666;
-          --text-footer: #ffffff;
-          --text-footer-secondary: #999;
           --border-color: #e5e5e5;
           --btn-primary-bg: #000000;
           --btn-primary-text: #ffffff;
@@ -412,7 +342,6 @@ export function createDelayedRedirect(targetUrl, delay, clickData) {
           --btn-secondary-hover-text: #ffffff;
           --feature-icon-bg: #000000;
           --feature-icon-fill: #ffffff;
-          --footer-bg: #000000;
           --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
 
@@ -423,8 +352,6 @@ export function createDelayedRedirect(targetUrl, delay, clickData) {
           --bg-card: #1a1a1a;
           --text-primary: #ffffff;
           --text-secondary: #a0a0a0;
-          --text-footer: #ffffff;
-          --text-footer-secondary: #999;
           --border-color: #333;
           --btn-primary-bg: #ffffff;
           --btn-primary-text: #000000;
@@ -435,7 +362,6 @@ export function createDelayedRedirect(targetUrl, delay, clickData) {
           --btn-secondary-hover-text: #000000;
           --feature-icon-bg: #ffffff;
           --feature-icon-fill: #000000;
-          --footer-bg: #1a1a1a;
           --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
 
@@ -555,85 +481,36 @@ export function createDelayedRedirect(targetUrl, delay, clickData) {
           color: var(--text-primary);
         }
 
-        footer {
-          background: var(--footer-bg);
-          color: var(--text-footer);
-          padding: 2rem 0;
-          margin-top: auto;
-          transition: background 0.3s;
-        }
 
-        .footer-content {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 1rem;
-        }
-
-        .footer-links {
-          display: flex;
-          gap: 1.5rem;
-        }
-
-        .footer-links a {
-          color: var(--text-footer);
-          text-decoration: none;
-          transition: opacity 0.2s;
-        }
-
-        .footer-links a:hover {
-          opacity: 0.7;
-        }
-
-        .copyright {
-          color: var(--text-footer-secondary);
-          font-size: 0.875rem;
-        }
 
         @media (max-width: 768px) {
-          .container {
-            padding: 0 1rem;
-          }
+            .container {
+              padding: 0 1rem;
+            }
 
-          .redirect-card {
-            padding: 2rem 1.5rem;
-            margin-bottom: 1.5rem;
-          }
+            .redirect-card {
+              padding: 2rem 1.5rem;
+              margin-bottom: 1.5rem;
+            }
 
-          .redirect-card h1 {
-            font-size: 2rem;
-          }
+            .redirect-card h1 {
+              font-size: 2rem;
+            }
 
-          .redirect-info p {
-            font-size: 1.1rem;
-          }
+            .redirect-info p {
+              font-size: 1.1rem;
+            }
 
-          .url {
-            font-size: 0.8rem;
-            padding: 0.875rem 1.25rem;
-          }
+            .url {
+              font-size: 0.8rem;
+              padding: 0.875rem 1.25rem;
+            }
 
-          .btn {
-            width: 100%;
-            max-width: 280px;
+            .btn {
+              width: 100%;
+              max-width: 280px;
+            }
           }
-
-          footer {
-            padding: 1.5rem 0;
-          }
-
-          .footer-content {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
-          }
-
-          .footer-links {
-            flex-direction: column;
-            gap: 0.75rem;
-          }
-        }
       </style>
     </head>
     <body>
@@ -654,19 +531,6 @@ export function createDelayedRedirect(targetUrl, delay, clickData) {
           <a href="${safeTargetUrl}" class="btn btn-primary">Redirect Now</a>
         </div>
       </div>
-
-      <footer>
-        <div class="container">
-          <div class="footer-content">
-            <div class="footer-links">
-              <a href="/">Home</a>
-              <a href="#">Documentation</a>
-              <a href="#">Support</a>
-            </div>
-            <p class="copyright">© 2024 Link Redirect Service. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
 
       <script>
         // Theme detection and application
