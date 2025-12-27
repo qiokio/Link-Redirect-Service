@@ -1,5 +1,11 @@
 // Cloudflare Pages Functions - Risk Check Page (Dynamic Route)
-import { getConfig, errorResponse } from '../lib/utils.js';
+import { 
+  getConfig, 
+  errorResponse,
+  verifyHMACSignature,
+  getHMACSecret,
+  generateHMACSignature
+} from '../lib/utils.js';
 import { assessUrlRisk, createRiskCheckResponse, getRiskLevel } from '../lib/risk-check.js';
 
 export async function onRequestGet(context) {
@@ -7,10 +13,33 @@ export async function onRequestGet(context) {
   const url = new URL(request.url);
   
   const targetUrl = url.searchParams.get('to');
+  const timestamp = url.searchParams.get('ts');
+  const signature = url.searchParams.get('sig');
   
   if (!targetUrl) {
     console.log('Risk check failed: Missing target URL parameter');
     return errorResponse('Missing target URL parameter "to"', 400);
+  }
+  
+  if (!timestamp || !signature) {
+    console.log('Risk check failed: Missing HMAC signature parameters');
+    return errorResponse('Invalid or missing security parameters', 403);
+  }
+  
+  // Verify HMAC signature
+  const secret = getHMACSecret(env);
+  const signatureData = `${targetUrl}|${timestamp}`;
+  const isValid = await verifyHMACSignature(signatureData, signature, secret);
+  
+  // Check if timestamp is within valid range (5 minutes)
+  const now = Date.now();
+  const ts = parseInt(timestamp);
+  const signatureAge = now - ts;
+  const maxSignatureAge = 5 * 60 * 1000; // 5 minutes in milliseconds
+  
+  if (!isValid || isNaN(ts) || signatureAge > maxSignatureAge) {
+    console.log('Risk check failed: Invalid HMAC signature or expired timestamp', { isValid, signatureAge, maxSignatureAge });
+    return errorResponse('Invalid or expired security parameters', 403);
   }
   
   // Perform comprehensive risk assessment using dedicated risk check functions
@@ -32,8 +61,14 @@ export async function onRequestGet(context) {
   }
   
   // Risk check passed, redirect to unified redirect page /r/
+  const newTimestamp = Date.now();
+  const newSignatureData = `${targetUrl}|${newTimestamp}`;
+  const newSignature = await generateHMACSignature(newSignatureData, secret);
+  
   const unifiedRedirectUrl = new URL('/r/', request.url);
   unifiedRedirectUrl.searchParams.set('to', targetUrl);
+  unifiedRedirectUrl.searchParams.set('ts', newTimestamp.toString());
+  unifiedRedirectUrl.searchParams.set('sig', newSignature);
   
   console.log('Risk check passed, redirecting to unified redirect page', { targetUrl, riskLevel });
   

@@ -6,7 +6,9 @@ import {
   createDelayedRedirect,
   parseDelay,
   logClickStatistics,
-  logBlockedRequest
+  logBlockedRequest,
+  generateHMACSignature,
+  getHMACSecret
 } from '../lib/utils.js';
 
 export async function onRequestGet(context) {
@@ -130,8 +132,15 @@ async function handleRedirectWithParams(params, request, env, waitUntil) {
 
   if (config.enableRiskCheck) {
     // Redirect to risk check page /c/
+    const timestamp = Date.now();
+    const secret = getHMACSecret(env);
+    const signatureData = `${targetUrl}|${timestamp}`;
+    const signature = await generateHMACSignature(signatureData, secret);
+    
     const riskCheckUrl = new URL('/c/', request.url);
     riskCheckUrl.searchParams.set('to', targetUrl);
+    riskCheckUrl.searchParams.set('ts', timestamp.toString());
+    riskCheckUrl.searchParams.set('sig', signature);
     
     console.log('Encrypted redirect: redirecting to risk check page', { targetUrl, riskCheckUrl: riskCheckUrl.toString() });
     
@@ -145,8 +154,15 @@ async function handleRedirectWithParams(params, request, env, waitUntil) {
     });
   } else if (config.enableUnifiedRedirect) {
     // Directly redirect to unified redirect page /r/
+    const timestamp = Date.now();
+    const secret = getHMACSecret(env);
+    const signatureData = `${targetUrl}|${timestamp}`;
+    const signature = await generateHMACSignature(signatureData, secret);
+    
     const unifiedRedirectUrl = new URL('/r/', request.url);
     unifiedRedirectUrl.searchParams.set('to', targetUrl);
+    unifiedRedirectUrl.searchParams.set('ts', timestamp.toString());
+    unifiedRedirectUrl.searchParams.set('sig', signature);
     
     console.log('Encrypted redirect: redirecting to unified redirect page', { targetUrl, unifiedRedirectUrl: unifiedRedirectUrl.toString() });
     

@@ -1,5 +1,48 @@
 // Common utility function library
 
+// ==================== HMAC Signature Functions ====================
+
+export function getHMACSecret(env) {
+  if (env.HMAC_SECRET) {
+    return env.HMAC_SECRET;
+  }
+  console.warn('Warning: HMAC_SECRET environment variable not set, using default value (insecure in production)');
+  return 'default-hmac-secret-key-change-in-production';
+}
+
+export async function generateHMACSignature(data, secret) {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  
+  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data));
+  return base64UrlEncodeFromBuffer(signature);
+}
+
+export async function verifyHMACSignature(data, signature, secret) {
+  try {
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['verify']
+    );
+    
+    const signatureBuffer = base64UrlDecodeToBuffer(signature);
+    return await crypto.subtle.verify('HMAC', key, signatureBuffer, encoder.encode(data));
+  } catch (error) {
+    console.error('HMAC verification failed:', error);
+    return false;
+  }
+}
+
 // ==================== JWT Session Management ====================
 
 export function getJWTSecret(env) {
