@@ -292,7 +292,7 @@ export function errorResponse(message, status = 400) {
               <a href="#">Documentation</a>
               <a href="#">Support</a>
             </div>
-            <p class="copyright">© 2024 Link Redirect Service. All rights reserved.</p>
+            <p class="copyright">© 2025 Link Redirect Service. All rights reserved.</p>
           </div>
         </div>
       </footer>

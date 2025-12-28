@@ -680,7 +680,7 @@ function generateLinkPage() {
               <a href="/#github">GitHub</a>
               <a href="#" id="logoutLink">Logout</a>
             </div>
-            <p class="copyright">© 2024 Link Redirect Service. All rights reserved.</p>
+            <p class="copyright">© 2025 Link Redirect Service. All rights reserved.</p>
           </div>
         </div>
       </footer>
