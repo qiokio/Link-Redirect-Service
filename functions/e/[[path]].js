@@ -201,6 +201,7 @@ async function handleRedirectWithParams(params, request, env, waitUntil) {
   } else if (config.enableDelay && finalDelay > 0) {
     return createDelayedRedirect(targetUrl, finalDelay, clickData);
   } else {
+    // For delay=0 or when delay is disabled, redirect immediately
     return new Response(null, {
       status: 302,
       headers: {

@@ -76,6 +76,18 @@ export async function onRequestGet(context) {
   
   console.log('Generating unified redirect page', { targetUrl });
   
+  // Check if delay is 0, if so redirect immediately
+  if (decryptedData.delay === 0) {
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': targetUrl,
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY'
+      }
+    });
+  }
+  
   // Generate secure unified redirect page with parameters
   return createUnifiedRedirectPage(targetUrl, config, decryptedData);
 }

@@ -169,6 +169,7 @@ export async function onRequestGet(context) {
   } else if (config.enableDelay && delay > 0) {
     return createDelayedRedirect(targetUrl, delay, clickData);
   } else {
+    // For delay=0 or when delay is disabled, redirect immediately
     return new Response(null, {
       status: 302,
       headers: {

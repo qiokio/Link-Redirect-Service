@@ -5,6 +5,19 @@ export function createUnifiedRedirectPage(targetUrl, config, params = {}) {
   const domain = getDomainFromUrl(targetUrl);
   // Use delay from params if available, otherwise use default delay from config
   const delay = params.delay || config.unifiedRedirectDelay;
+  
+  // If delay is 0, redirect immediately without showing a page
+  if (delay === 0) {
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': targetUrl,
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY'
+      }
+    });
+  }
+  
   const delaySeconds = delay / 1000;
   const safeTargetUrl = targetUrl.replace(/</g, '&lt;').replace(/>/g, '&gt;');
   
@@ -303,6 +316,18 @@ export function createUnifiedRedirectPage(targetUrl, config, params = {}) {
 }
 
 export function createDelayedRedirect(targetUrl, delay, clickData) {
+  // If delay is 0, redirect immediately without showing a page
+  if (delay === 0) {
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': targetUrl,
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY'
+      }
+    });
+  }
+  
   const safeTargetUrl = targetUrl.replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const delaySeconds = delay / 1000;
 
