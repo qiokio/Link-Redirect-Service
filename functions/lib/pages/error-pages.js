@@ -181,41 +181,7 @@ export function errorResponse(message, status = 400) {
           color: var(--btn-secondary-hover-text);
         }
 
-        footer {
-          background: var(--footer-bg);
-          color: var(--text-footer);
-          padding: 2rem 0;
-          margin-top: auto;
-          transition: background 0.3s;
-        }
 
-        .footer-content {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 1rem;
-        }
-
-        .footer-links {
-          display: flex;
-          gap: 1.5rem;
-        }
-
-        .footer-links a {
-          color: var(--text-footer);
-          text-decoration: none;
-          transition: opacity 0.2s;
-        }
-
-        .footer-links a:hover {
-          opacity: 0.7;
-        }
-
-        .copyright {
-          color: var(--text-footer-secondary);
-          font-size: 0.875rem;
-        }
 
         @media (max-width: 768px) {
           .container {
@@ -249,20 +215,7 @@ export function errorResponse(message, status = 400) {
             max-width: 280px;
           }
 
-          footer {
-            padding: 1.5rem 0;
-          }
 
-          .footer-content {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
-          }
-
-          .footer-links {
-            flex-direction: column;
-            gap: 0.75rem;
-          }
         }
       </style>
     </head>
@@ -284,18 +237,7 @@ export function errorResponse(message, status = 400) {
         </div>
       </div>
 
-      <footer>
-        <div class="container">
-          <div class="footer-content">
-            <div class="footer-links">
-              <a href="/">Home</a>
-              <a href="#">Documentation</a>
-              <a href="#">Support</a>
-            </div>
-            <p class="copyright">© 2025 Link Redirect Service. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+
 
       <script>
         // Theme detection and application
