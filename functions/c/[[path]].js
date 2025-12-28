@@ -50,19 +50,20 @@ export async function onRequestGet(context) {
     return errorResponse('Invalid or expired security parameters', 403);
   }
   
-  // Decrypt target URL
+  // Decrypt target URL and parameters
   const cEncryptionKey = getCEncryptionKey(env);
-  let targetUrl;
+  let decryptedData;
   try {
-    const decryptedData = await decryptAES(encryptedUrl, cEncryptionKey);
-    targetUrl = decryptedData.to;
-    if (!targetUrl) {
+    decryptedData = await decryptAES(encryptedUrl, cEncryptionKey);
+    if (!decryptedData.to) {
       throw new Error('Invalid encrypted data: missing target URL');
     }
   } catch (error) {
     console.log('Risk check failed: Failed to decrypt target URL', { error: error.message });
     return errorResponse('Invalid or expired security parameters', 403);
   }
+  
+  const targetUrl = decryptedData.to;
   
   // Perform comprehensive risk assessment using dedicated risk check functions
   const riskResult = await assessUrlRisk(targetUrl, { env });
@@ -82,16 +83,16 @@ export async function onRequestGet(context) {
     return errorResponse(`Security check failed: ${riskResult.reasons.join(', ')}`, 403);
   }
   
-  // Risk check passed, redirect to unified redirect page /r/ with encrypted target URL
+  // Risk check passed, redirect to unified redirect page /r/ with encrypted target URL and parameters
   const newTimestamp = Date.now();
-  // Re-encrypt target URL with fresh encryption
+  // Re-encrypt target URL and parameters with fresh encryption
   const rEncryptionKey = getREncryptionKey(env);
-  const newEncryptedUrl = await encryptAES({ to: targetUrl }, rEncryptionKey);
-  const newSignatureData = `${newEncryptedUrl}|${newTimestamp}`;
+  const newEncryptedData = await encryptAES(decryptedData, rEncryptionKey);
+  const newSignatureData = `${newEncryptedData}|${newTimestamp}`;
   const newSignature = await generateHMACSignature(newSignatureData, getRHMACSecret(env));
   
   const unifiedRedirectUrl = new URL('/r/', request.url);
-  unifiedRedirectUrl.searchParams.set('to', newEncryptedUrl);
+  unifiedRedirectUrl.searchParams.set('to', newEncryptedData);
   unifiedRedirectUrl.searchParams.set('ts', newTimestamp.toString());
   unifiedRedirectUrl.searchParams.set('sig', newSignature);
   

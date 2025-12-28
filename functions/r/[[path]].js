@@ -46,19 +46,20 @@ export async function onRequestGet(context) {
     return errorResponse('Invalid or expired security parameters', 403);
   }
   
-  // Decrypt target URL
+  // Decrypt target URL and parameters
   const rEncryptionKey = getREncryptionKey(env);
-  let targetUrl;
+  let decryptedData;
   try {
-    const decryptedData = await decryptAES(encryptedUrl, rEncryptionKey);
-    targetUrl = decryptedData.to;
-    if (!targetUrl) {
+    decryptedData = await decryptAES(encryptedUrl, rEncryptionKey);
+    if (!decryptedData.to) {
       throw new Error('Invalid encrypted data: missing target URL');
     }
   } catch (error) {
     console.log('Unified redirect failed: Failed to decrypt target URL', { error: error.message });
     return errorResponse('Invalid or expired security parameters', 403);
   }
+  
+  const targetUrl = decryptedData.to;
   
   try {
     const targetUrlObj = new URL(targetUrl);
@@ -75,6 +76,6 @@ export async function onRequestGet(context) {
   
   console.log('Generating unified redirect page', { targetUrl });
   
-  // Generate secure unified redirect page (only shows domain name)
-  return createUnifiedRedirectPage(targetUrl, config);
+  // Generate secure unified redirect page with parameters
+  return createUnifiedRedirectPage(targetUrl, config, decryptedData);
 }

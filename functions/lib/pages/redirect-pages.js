@@ -1,9 +1,11 @@
 // Cloudflare Pages Functions - Redirect Pages Rendering
 import { getDomainFromUrl } from '../utils.js';
 
-export function createUnifiedRedirectPage(targetUrl, config) {
+export function createUnifiedRedirectPage(targetUrl, config, params = {}) {
   const domain = getDomainFromUrl(targetUrl);
-  const delaySeconds = config.unifiedRedirectDelay / 1000;
+  // Use delay from params if available, otherwise use default delay from config
+  const delay = params.delay || config.unifiedRedirectDelay;
+  const delaySeconds = delay / 1000;
   const safeTargetUrl = targetUrl.replace(/</g, '&lt;').replace(/>/g, '&gt;');
   
   const html = `

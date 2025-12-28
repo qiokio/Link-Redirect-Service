@@ -105,19 +105,23 @@ export async function onRequestGet(context) {
   console.log('Legacy redirect processed successfully', { targetUrl, source: clickData.source, delay });
 
   if (config.enableRiskCheck) {
-    // Redirect to risk check page /c/ with encrypted target URL
+    // Redirect to risk check page /c/ with encrypted target URL and parameters
     const timestamp = Date.now();
     const secret = getCHMACSecret(env);
     const redirectKey = getCEncryptionKey(env);
     
-    // Encrypt target URL
-    const encryptedUrl = await encryptAES({ to: targetUrl }, redirectKey);
+    // Encrypt target URL and parameters
+    const encryptedData = await encryptAES({ 
+      to: targetUrl,
+      source: clickData.source,
+      delay: delay
+    }, redirectKey);
     
-    const signatureData = `${encryptedUrl}|${timestamp}`;
+    const signatureData = `${encryptedData}|${timestamp}`;
     const signature = await generateHMACSignature(signatureData, secret);
     
     const riskCheckUrl = new URL('/c/', request.url);
-    riskCheckUrl.searchParams.set('to', encryptedUrl);
+    riskCheckUrl.searchParams.set('to', encryptedData);
     riskCheckUrl.searchParams.set('ts', timestamp.toString());
     riskCheckUrl.searchParams.set('sig', signature);
     
@@ -132,19 +136,23 @@ export async function onRequestGet(context) {
       }
     });
   } else if (config.enableUnifiedRedirect) {
-    // Directly redirect to unified redirect page /r/ with encrypted target URL
+    // Directly redirect to unified redirect page /r/ with encrypted target URL and parameters
     const timestamp = Date.now();
     const secret = getRHMACSecret(env);
     const redirectKey = getREncryptionKey(env);
     
-    // Encrypt target URL
-    const encryptedUrl = await encryptAES({ to: targetUrl }, redirectKey);
+    // Encrypt target URL and parameters
+    const encryptedData = await encryptAES({ 
+      to: targetUrl,
+      source: clickData.source,
+      delay: delay
+    }, redirectKey);
     
-    const signatureData = `${encryptedUrl}|${timestamp}`;
+    const signatureData = `${encryptedData}|${timestamp}`;
     const signature = await generateHMACSignature(signatureData, secret);
     
     const unifiedRedirectUrl = new URL('/r/', request.url);
-    unifiedRedirectUrl.searchParams.set('to', encryptedUrl);
+    unifiedRedirectUrl.searchParams.set('to', encryptedData);
     unifiedRedirectUrl.searchParams.set('ts', timestamp.toString());
     unifiedRedirectUrl.searchParams.set('sig', signature);
     
